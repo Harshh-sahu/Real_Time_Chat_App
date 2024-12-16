@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:5.0
+    container_name: mongodb-container  # Updated container name to match the one in Azure
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-db:/data/db
+    networks:
+      - app-network
+
+  boot-app:
+    image: harshsahu2003/chatback:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb-container:27017/chatapp  # Updated to match the MongoDB container name in Azure
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+volumes:
+  mongo-db:
+
+networks:
+  app-network:
